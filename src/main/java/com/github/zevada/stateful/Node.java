@@ -1,4 +1,4 @@
-package org.sevada.stateful;
+package com.github.zevada.stateful;
 
 import java.util.HashMap;
 import java.util.LinkedList;

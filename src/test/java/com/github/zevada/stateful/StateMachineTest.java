@@ -1,4 +1,4 @@
-package org.sevada.stateful;
+package com.github.zevada.stateful;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;

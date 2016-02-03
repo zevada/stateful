@@ -1,4 +1,4 @@
-package org.sevada.stateful;
+package com.github.zevada.stateful;
 
 /**
  * Thrown when an unexpected event is applied to a state machine.

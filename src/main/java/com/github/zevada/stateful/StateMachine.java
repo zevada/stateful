@@ -1,4 +1,4 @@
-package org.sevada.stateful;
+package com.github.zevada.stateful;
 
 /**
  * A simple event based state machine.

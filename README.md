@@ -3,6 +3,8 @@
 Stateful is a simple and lightweight event driven state machine library. With 
 Stateful you can implement complex state dependant logic with a clean and simple design. 
 
+[![Build Status](https://travis-ci.org/zevada/Stateful.svg?branch=master)](https://travis-ci.org/zevada/Stateful)
+
 # Usage
 
 ### Simple Transitions

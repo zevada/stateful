@@ -3,7 +3,19 @@
 Stateful is a simple and lightweight event driven state machine library. With 
 Stateful you can implement complex state dependant logic with a clean and simple design. 
 
+# Installation
+
 [![Build Status](https://travis-ci.org/zevada/Stateful.svg?branch=master)](https://travis-ci.org/zevada/Stateful)
+
+The project is built using Maven and the artifacts are available from Maven Central.
+
+```xml
+  <dependency>
+    <groupId>com.github.zevada</groupId>
+    <artifactId>stateful</artifactId>
+    <version>1.0.0</version>
+  </dependency>
+```
 
 # Usage
 

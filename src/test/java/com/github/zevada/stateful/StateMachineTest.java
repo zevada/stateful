@@ -13,10 +13,22 @@ public class StateMachineTest {
     RUN, PAUSE, END
   }
 
+  static class Context {
+    public String message;
+
+    public Context(String message) {
+      this.message = message;
+    }
+
+    public String getMessage() {
+      return message;
+    }
+  }
+
   @Test
   public void testStateMachineTransitions() {
-    StateMachine<State, EventType> stateMachine =
-      new StateMachineBuilder<State, EventType>(State.INIT)
+    StateMachine<State, EventType, Context> stateMachine =
+      new StateMachineBuilder<State, EventType, Context>(State.INIT)
         .addTransition(State.INIT, EventType.RUN, State.RUNNING)
         .addTransition(State.RUNNING, EventType.PAUSE, State.PAUSED)
         .addTransition(State.RUNNING, EventType.END, State.COMPLETED)
@@ -46,10 +58,10 @@ public class StateMachineTest {
   public void testOnStateEnterListener() {
     final boolean[] onEntered = {false};
 
-    StateMachine<State, EventType> stateMachine =
-      new StateMachineBuilder<State, EventType>(State.INIT)
+    StateMachine<State, EventType, Context> stateMachine =
+      new StateMachineBuilder<State, EventType, Context>(State.INIT)
         .addTransition(State.INIT, EventType.RUN, State.RUNNING)
-        .onEnter(State.RUNNING, () -> onEntered[0] = true)
+        .onEnter(State.RUNNING, (c) -> onEntered[0] = true)
         .build();
 
     stateMachine.apply(EventType.RUN);
@@ -61,10 +73,10 @@ public class StateMachineTest {
   public void testOnStateExitListener() {
     final boolean[] onExited = {false};
 
-    StateMachine<State, EventType> stateMachine =
-      new StateMachineBuilder<State, EventType>(State.INIT)
+    StateMachine<State, EventType, Context> stateMachine =
+      new StateMachineBuilder<State, EventType, Context>(State.INIT)
         .addTransition(State.INIT, EventType.RUN, State.RUNNING)
-        .onExit(State.INIT, () -> onExited[0] = true)
+        .onExit(State.INIT, (c) -> onExited[0] = true)
         .build();
 
     stateMachine.apply(EventType.RUN);
@@ -74,10 +86,37 @@ public class StateMachineTest {
 
   @Test(expected = UnexpectedEventTypeException.class)
   public void testUnexpectedEventTypeExceptionIsThrown() {
-    StateMachine<State, EventType> stateMachine =
-      new StateMachineBuilder<State, EventType>(State.INIT)
+    StateMachine<State, EventType, Context> stateMachine =
+      new StateMachineBuilder<State, EventType, Context>(State.INIT)
         .build();
 
     stateMachine.apply(EventType.RUN);
   }
+
+  @Test
+  public void testUnexpectedEventTypeExceptionIsNotThrown() {
+    StateMachine<State, EventType, Context> stateMachine =
+      new StateMachineBuilder<State, EventType, Context>(State.INIT)
+        .strictTransitions(false)
+        .build();
+
+    stateMachine.apply(EventType.RUN);
+  }
+
+  @Test
+  public void testApplyWithContext() {
+    final String[] contextReceived = {""};
+    String expectedMessage = "message";
+
+    StateMachine<State, EventType, Context> stateMachine =
+      new StateMachineBuilder<State, EventType, Context>(State.INIT)
+        .addTransition(State.INIT, EventType.RUN, State.RUNNING)
+        .onExit(State.INIT, (c) -> contextReceived[0] = c.message)
+        .build();
+
+    stateMachine.apply(EventType.RUN, new Context(expectedMessage));
+
+    assertEquals(expectedMessage, contextReceived[0]);
+  }
 }
+

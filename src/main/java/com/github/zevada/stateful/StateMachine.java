@@ -6,28 +6,42 @@ package com.github.zevada.stateful;
  * @param <State> The state of the entity
  * @param <EventType> The event type to be handled
  */
-public final class StateMachine<State extends Enum<State>, EventType extends Enum<EventType>> {
-  private Node<State, EventType> root;
+public final class StateMachine<State extends Enum<State>, EventType extends Enum<EventType>, Context> {
+  private Node<State, EventType, Context> root;
+  private boolean strictTransitions;
 
-  StateMachine(Node<State, EventType> root) {
+  StateMachine(Node<State, EventType, Context> root, boolean strictTransitions) {
     this.root = root;
+    this.strictTransitions = strictTransitions;
+  }
+
+  /**
+   * Apply an event to the state machine with no context object.
+   */
+  public void apply(EventType eventType) {
+    apply(eventType, null);
   }
 
   /**
    * Apply an event to the state machine.
    *
    * @param eventType The event type to be handled
+   * @param context A context to pass into the transition function
    */
-  public void apply(EventType eventType) {
-    Node<State, EventType> nextNode = root.getNeighbor(eventType);
+  public void apply(EventType eventType, Context context) {
+    Node<State, EventType, Context> nextNode = root.getNeighbor(eventType);
 
     if (nextNode == null) {
-      throw new UnexpectedEventTypeException(root.getState(), eventType);
+      if (strictTransitions) {
+        throw new UnexpectedEventTypeException(root.getState(), eventType);
+      } else {
+        return;
+      }
     }
 
-    root.onExit();
+    root.onExit(context);
     root = nextNode;
-    root.onEnter();
+    root.onEnter(context);
   }
 
   /**

@@ -5,10 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-final class Node<State extends Enum<State>, EventType extends Enum<EventType>> {
-  private final Map<EventType, Node<State, EventType>> neighbors;
-  private final List<Runnable> onEnterListeners;
-  private final List<Runnable> onExitListeners;
+final class Node<State extends Enum<State>, EventType extends Enum<EventType>, Context> {
+  protected final Map<EventType, Node<State, EventType, Context>> neighbors;
+  private final List<StatefulFunction<Context>> onEnterListeners;
+  private final List<StatefulFunction<Context>> onExitListeners;
   private final State state;
 
   Node(State state) {
@@ -22,27 +22,27 @@ final class Node<State extends Enum<State>, EventType extends Enum<EventType>> {
     return state;
   }
 
-  public Node<State, EventType> getNeighbor(EventType eventType) {
+  public Node<State, EventType, Context> getNeighbor(EventType eventType) {
     return neighbors.get(eventType);
   }
 
-  public void onEnter() {
-    onEnterListeners.forEach(Runnable::run);
+  public void onEnter(Context c) {
+    onEnterListeners.forEach(f -> f.transition(c));
   }
 
-  public void onExit() {
-    onExitListeners.forEach(Runnable::run);
+  public void onExit(Context c) {
+    onExitListeners.forEach(f -> f.transition(c));
   }
 
-  public void addNeighbor(EventType eventType, Node<State, EventType> destination) {
+  public void addNeighbor(EventType eventType, Node<State, EventType, Context> destination) {
     neighbors.put(eventType, destination);
   }
 
-  public void addOnEnterListener(Runnable onEnterListener) {
+  public void addOnEnterListener(StatefulFunction<Context> onEnterListener) {
     onEnterListeners.add(onEnterListener);
   }
 
-  public void addOnExitListener(Runnable onExitListener) {
+  public void addOnExitListener(StatefulFunction<Context> onExitListener) {
     onExitListeners.add(onExitListener);
   }
 }

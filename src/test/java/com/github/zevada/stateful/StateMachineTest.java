@@ -80,4 +80,14 @@ public class StateMachineTest {
 
     stateMachine.apply(EventType.RUN);
   }
+
+  @Test
+  public void testUnexpectedEventTypeExceptionIsNotThrown() {
+    StateMachine<State, EventType> stateMachine =
+      new StateMachineBuilder<State, EventType>(State.INIT)
+        .strictTransitions(false)
+        .build();
+
+    stateMachine.apply(EventType.RUN);
+  }
 }

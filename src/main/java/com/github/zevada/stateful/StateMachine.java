@@ -8,9 +8,11 @@ package com.github.zevada.stateful;
  */
 public final class StateMachine<State extends Enum<State>, EventType extends Enum<EventType>> {
   private Node<State, EventType> root;
+  private boolean strictTransitions;
 
-  StateMachine(Node<State, EventType> root) {
+  StateMachine(Node<State, EventType> root, boolean strictTransitions) {
     this.root = root;
+    this.strictTransitions = strictTransitions;
   }
 
   /**
@@ -22,7 +24,11 @@ public final class StateMachine<State extends Enum<State>, EventType extends Enu
     Node<State, EventType> nextNode = root.getNeighbor(eventType);
 
     if (nextNode == null) {
-      throw new UnexpectedEventTypeException(root.getState(), eventType);
+      if (strictTransitions) {
+        throw new UnexpectedEventTypeException(root.getState(), eventType);
+      } else {
+        return;
+      }
     }
 
     root.onExit();

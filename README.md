@@ -55,3 +55,17 @@ StateMachine<State, Event> stateMachine =
 
 stateMachine.apply(Event.RUN);
 ```
+
+### Non-strict transition mode
+
+By default, applying an event which does not cause a state transition throws an **UnexpectedEventTypeException**. This behavior can be disabled by setting **strictTransitions** to false when building the state machine.
+
+```java
+StateMachine<State, EventType> stateMachine =
+  new StateMachineBuilder<State, EventType>(State.INIT)
+    .strictTransitions(false)
+    .build();
+
+// No longer throws an exception
+stateMachine.apply(EventType.RUN);
+``` 

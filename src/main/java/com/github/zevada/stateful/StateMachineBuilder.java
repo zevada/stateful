@@ -12,6 +12,8 @@ import java.util.Map;
 final public class StateMachineBuilder<State extends Enum<State>, EventType extends Enum<EventType>> {
   private final Map<State, Node<State, EventType>> nodes;
   private final Node<State, EventType> root;
+  private boolean strictTransitions = true;
+
 
   /**
    * @param initialState the initial state of the state machine
@@ -30,7 +32,7 @@ final public class StateMachineBuilder<State extends Enum<State>, EventType exte
    * @return the final state machine
    */
   public StateMachine<State, EventType> build() {
-    return new StateMachine<>(root);
+    return new StateMachine<>(root, strictTransitions);
   }
 
   /**
@@ -97,6 +99,16 @@ final public class StateMachineBuilder<State extends Enum<State>, EventType exte
     }
 
     node.addOnExitListener(onExit);
+
+    return this;
+  }
+
+  /**
+   * Configures whether or not applying a state with no available transition throws an exception.
+   * @param strictTransitions If true, calling apply with an invalid transition will throw.
+   */
+  public StateMachineBuilder<State, EventType> strictTransitions(boolean strictTransitions) {
+    this.strictTransitions = strictTransitions;
 
     return this;
   }
